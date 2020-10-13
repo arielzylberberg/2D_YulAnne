@@ -5,7 +5,7 @@ clc
 
 load('../data/RT_task/data_RT.mat');
 
-IDs = [3 4 5 6 7 9 16 18];
+IDs = 6:13;
 
 trials = dataset == 2; % select hand data only
 
