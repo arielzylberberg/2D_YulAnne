@@ -17,8 +17,6 @@ switch USfunc
         Bup(s) = B0*1./(1+(a*(t(s)-d)));
     case 'Step'
         Bup(s)=B0*1e-3;
-    case 'Custom1'
-        Bup = B0+d*sin(a*t);
     case {'None','Deadline'}
         % Just use Bup itself
     otherwise
