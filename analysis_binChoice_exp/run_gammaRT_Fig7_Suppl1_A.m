@@ -4,7 +4,7 @@ close all
 clc
 
 
-IDs = [7, 12]; %{'S07', 'S12'};
+IDs = [7, 12];
 
 load('../data/RT_task/data_RT_binChoice.mat')
 % DATA VARIABLES
@@ -71,7 +71,7 @@ for subj = 1:length(IDs)
     [xMin_max(:,subj),fval_max(subj),~] = fmincon(@(fitParams) model2D_RT(fitParams, D, 'max'), fitParams, [], [], [], [], LB, UB,[], opts);
     % run optimized max model
     [~, RTmax_2D_means{subj},RTmax_distr{subj}]=model2D_RT(xMin_max(:,subj), D, 'max');
-    
+
     
     %% plot results   
     set(0,'DefaultAxesBox', 'off',...
@@ -134,8 +134,10 @@ end
 
 % save mean predicted RTs from gamma model for plotting purposes 
 % (see Fig7_Suppl1_B.m)
-save('results_RTmodel.mat','RTsum_2D_means','RTmax_2D_means');
+% also save xMin_sum and xMin_max = best-fitting parameters for each subject
+save('results_RTmodel.mat','xMin_sum','xMin_max','RTsum_2D_means','RTmax_2D_means');
     
+log10(BF)
 
 
 %% Function running RT model
