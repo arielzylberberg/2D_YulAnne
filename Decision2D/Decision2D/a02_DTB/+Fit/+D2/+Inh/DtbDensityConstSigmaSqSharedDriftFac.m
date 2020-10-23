@@ -1,0 +1,6 @@
+classdef DtbDensityConstSigmaSqSharedDriftFac < ...
+        Fit.D2.Inh.DtbDensity & ...
+        Fit.D2.Inh.DtbConstSigmaSqSharedDriftFac
+    %
+    % 2015 YK wrote the initial version.
+end

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/../../../../LengyelLab/EyeMem" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../../../../LengyelLab/ProBehav" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/ProBehav" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/ProBehav/probehav/lib/pylabyk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/pylabyk" vcs="Git" />
+  </component>
+</project>

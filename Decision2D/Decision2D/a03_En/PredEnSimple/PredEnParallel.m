@@ -1,0 +1,2 @@
+classdef PredEnParallel < PredEnSimple
+end

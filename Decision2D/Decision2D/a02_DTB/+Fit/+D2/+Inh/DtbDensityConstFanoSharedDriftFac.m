@@ -1,0 +1,6 @@
+classdef DtbDensityConstFanoSharedDriftFac < ...
+        Fit.D2.Inh.DtbDensity & ...
+        Fit.D2.Inh.DtbConstFanoSharedDriftFac
+    %
+    % 2015 YK wrote the initial version.
+end
