@@ -1,7 +1,9 @@
 # 2D Decision
 
 ## Figure 2 and fits for Figure 2 supplement 3
-(AZ wrote this part of the code.)
+ * All MATLAB scripts are in folder `model_fit_RT_models`: `run_all_analysis.m` will execute all code that is required to plot the serial and parallel choice-RT fits 
+   * Note: By default, the `run_fit_2D()` function will not be called since fitting takes several days to complete. To re-fit the data, run `run_fit_2D.m` on a cluster (see runcode.sh), then manually move files with new fits to `from_fits` folder 
+
 
 ## Figure 2 supplements 1-5
 * In MATLAB, run `main_fig2supp1_5.m` to load and use fitted parameters to export predictions that will be used for plotting.
