@@ -2,7 +2,13 @@
 
 ## Figure 2 and fits for Figure 2 supplement 3
  * All MATLAB scripts are in folder `model_fit_RT_models`: `run_all_analysis.m` will execute all code that is required to plot the serial and parallel choice-RT fits 
-   * Note: By default, the `run_fit_2D()` function will not be called since fitting takes several days to complete. To re-fit the data, run `run_fit_2D.m` on a cluster (see runcode.sh), then manually move files with new fits to `from_fits` folder 
+   * Note: By default, the `run_fit_2D()` function will not be called since fitting takes several days to complete. To re-fit the data, run `run_fit_2D.m` on a cluster (see runcode.sh), then manually move files with new fits to `from_fits` folder and then execute all other functions in `run_all_analysis.m` to create model predictions based on fit parameters
+   
+ (AZ wrote this part of the code)
+   
+ * For Fig 2 Suppl 3: To get the BF values for the binary-choice task (pink bars), go to `analysis_binChoice_exp` folder and run `run_sim_binChoice_Fig2_Suppl3.m`
+ 
+ (AL wrote this part of the code)
 
 
 ## Figure 2 supplements 1-5
@@ -36,10 +42,15 @@
 (AZ wrote this part of the code.)
 
 ## Figure 5 supplement 2
-(AL worte this part of the code.)
+ * In MATLAB, go to `model_fit_RT_models` folder and run `run_modelfree_comp_Fig5_Suppl2.m`
+ 
+ (AL wrote this part of the code)
 
 ## Figure 6
 (AZ wrote this part of the code.)
 
 ## Figure 7 and Figure 7 supplement 1
-(AL worte this part of the code.)
+ * In MATLAB, go to `analysis_binChoice_exp` folder and run `run_DDM_Fig7.m` to reproduce Fig 7, and `run_gammaRT_Fig7_Suppl1_A.m` and `run_plotModels_Fig7_Suppl1_B.m` for Fig 7 supplement 1. 
+  * Note: To re-fit the gamma RT model, simply run `run_gammaRT_Fig7_Suppl1_A.m`, which saves model fits in `results_RTmodel.mat`. This takes a few minutes to run, so for Fig 7 supplement 1B, `run_plotModels_Fig7_Suppl1_B.m` does NOT re-fit the model, but simply reads saved results from the `results_RTmodel.mat` file.
+ 
+ (AL and DW wrote this part of the code)
