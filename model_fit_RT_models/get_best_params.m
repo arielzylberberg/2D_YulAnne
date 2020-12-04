@@ -2,7 +2,7 @@ function [v_theta,combs] = get_best_params(serial_flag)
 
 %%
 
-load('data_RT_yul_anne','bimanual','dataset','group');
+load('../data/RT_task/data_RT','bimanual','dataset','group');
 
 
 %% all unique combs

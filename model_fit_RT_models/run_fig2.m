@@ -17,18 +17,21 @@ function run_fig2(dataset_num,bimanual_flag,always_use_monomanual_fits)
 
 fit_type = 0; % fit pred, or all coh
 
-addpath(genpath('../../default_matlab_ariel_files'));
+addpath(genpath('../matlab_files'));
 
 %%
 
 datadir = '../data/RT_task/';
-load(fullfile(datadir,'data_RT_yul_anne'),'RT','coh_motion','coh_color','corr_motion','corr_color',...
+load(fullfile(datadir,'data_RT'),'RT','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group','SignedColorStrengthLogodds');
 
 % plot color in log scale - only for yul, because of the need to combine Ss
 % with different coh, that are proportional only in Logodds scale
 I = dataset==1;
 coh_color(I) = SignedColorStrengthLogodds(I);
+
+IDX_DATA = dataset == dataset_num & bimanual == bimanual_flag & ~isnan(RT); % NEW: index for data points (not fits)
+
 
 %%
 
@@ -55,16 +58,16 @@ else
 end
 
 
-if dataset_num==1
+if dataset_num==1 % for eye data
     savefilename = 'fig_paper_eyeRT';
-else
+else % for manual task
     if bimanual_flag==0
-        savefilename = 'fig_paper_monoRT';
+        savefilename = 'fig_paper_monoRT'; % unimanual
     else
         if always_use_monomanual_fits
-            savefilename = 'fig_paper_biRT';
+            savefilename = 'fig_paper_biRT'; % bimanual data (unimanual fits)
         else
-            savefilename = 'fig_paper_biRT_fitted';
+            savefilename = 'fig_paper_biRT_fitted'; % bimanual data (bimanual fits)
         end
     end
 end
@@ -91,7 +94,7 @@ for i_serial = 1:length(uni_serial)
     
     combs = all_combs;
     
-    I = combs(:,1)==dataset_num & ...     % 1: Yul; 2: Anne
+    I = combs(:,1)==dataset_num & ...     % 1: eye; 2: hand
         combs(:,3)==bimanual_flag;     % 0: monomanual; 1: bimanual
     
     
@@ -111,18 +114,29 @@ for i_serial = 1:length(uni_serial)
             str = 'fit_parallel';
         end
         
-        if always_use_monomanual_fits
-            filename = [str,'_d',num2str(combs(i,1)),'_s',num2str(combs(i,2)),'_b0',extension,'.mat'];
+        if bimanual_flag == 0 %always_use_monomanual_fits
+            filename = [str,'_d',num2str(combs(i,1)),'_s',num2str(combs(i,2)),'_b0',extension,'.mat']; % eye data / unimanual fits
         else
-            filename = [str,'_d',num2str(combs(i,1)),'_s',num2str(combs(i,2)),'_b',num2str(combs(i,3)),extension,'.mat'];
+            filename = [str,'_d',num2str(combs(i,1)),'_s',num2str(combs(i,2)),'_b',num2str(combs(i,3)),extension,'.mat']; % bimanual fits
         end
         
         fullname = fullfile('./finer_coh/',filename);
         
         d = load(fullname);
+          
+%         % when plotting bimanual data with unimanual fits, load unimanual
+%         % fits
+%         if bimanual_flag == 1 && always_use_monomanual_fits == 1
+%             d_uni = load(['./finer_coh/' str '_d',num2str(combs(i,1)),'_s',num2str(combs(i,2)),'_b0',extension,'.mat']);
+%             % overwrite fits to get unimanual predictions
+%             d.coh_motion_fine = d_uni.coh_motion_fine;
+%             d.Pmotion_fine = d_uni.Pmotion_fine;
+%             d.coh_color_fine = d_uni.coh_color_fine;
+%             d.Pcolor_fine = d_uni.Pcolor_fine;
+%         end
+        
         IDX = IDX | d.idx;
         count(i) = sum(d.idx);
-        
         d.coh_m = fix(d.coh_m*1e6)/1e6; % needs some rounding to make unique work - annoying
         
         % convert the color scale to logodds - only for Yul
@@ -131,19 +145,20 @@ for i_serial = 1:length(uni_serial)
             d.coh_color_fine = log(pblue./(1-pblue));
         end
 
-
+        % get subject data
         [~,mRT_color(:,:,i)] = curva_media_hierarch(d.E_RT_color_correct,d.coh_c(:,2),abs(d.coh_c(:,1)),[],0);
         try
-        [~,mRT_motion(:,:,i)] = curva_media_hierarch(d.E_RT_motion_correct,d.coh_m(:,1),abs(d.coh_m(:,2)),[],0);
+            [~,mRT_motion(:,:,i)] = curva_media_hierarch(d.E_RT_motion_correct,d.coh_m(:,1),abs(d.coh_m(:,2)),[],0);
         catch
             aa
         end
+        
         p_motion_fine = [p_motion_fine; d.p_motion_fine'];
         p_color_fine = [p_color_fine; d.p_color_fine'];
         
         % normalize the cohs to the max for each subjectg
         do_normalize = 1;
-        if do_normalize && all(combs(:,1)==1) % Yul's dataset
+        if do_normalize && all(combs(:,1)==1) % Yul's dataset (eye data)
             norm_m = max(d.coh_motion_fine);
             norm_c = max(d.coh_color_fine);
             %disp(norm_m)
@@ -210,18 +225,19 @@ for i_serial = 1:length(uni_serial)
     p.current_ax(1);
     if serial_flag==1
         
+        % plot model predictions
         plot(d.coh_motion_fine,nanmean(p_motion_fine,1),'LineStyle','-','color',colores1(end,:));
         
         
         if do_average_per_suj_first
-            tt = unique(coh_motion(IDX));
+            tt = unique(coh_motion(IDX_DATA));
             conditions = [coh_motion,abs(coh_color),group];
             [Mean,~,uni_conditions,~,~] = average_per_condition(choice_motion, ...
-                conditions,'filter',IDX);
+                conditions,'filter',IDX_DATA);
             xx = average_per_condition(Mean,uni_conditions(:,1:2));
             xx = reshape(xx,n,length(xx)/n)';
         else
-            [tt,xx,ss] = curva_media_hierarch(choice_motion,coh_motion,abs(coh_color),IDX,0);
+            [tt,xx,ss] = curva_media_hierarch(choice_motion,coh_motion,abs(coh_color),IDX_DATA,0);
         end
         
         
@@ -251,14 +267,14 @@ for i_serial = 1:length(uni_serial)
         plot(d.coh_color_fine,nanmean(p_color_fine,1),'LineStyle','-','color',colores2(end,:));
         
         if do_average_per_suj_first
-            tt = unique(coh_color(IDX));
+            tt = unique(coh_color(IDX_DATA));
             conditions = [coh_color,abs(coh_motion),group];
             [Mean,~,uni_conditions,~,~] = average_per_condition(choice_color, ...
-                conditions,'filter',IDX);
+                conditions,'filter',IDX_DATA);
             xx = average_per_condition(Mean,uni_conditions(:,1:2));
             xx = reshape(xx,n,length(xx)/n)';
         else
-            [tt,xx,ss] = curva_media_hierarch(choice_color,coh_color,abs(coh_motion),IDX,0);
+            [tt,xx,ss] = curva_media_hierarch(choice_color,coh_color,abs(coh_motion),IDX_DATA,0);
         end
         
         if show_data_pred
@@ -286,13 +302,13 @@ for i_serial = 1:length(uni_serial)
     end
     n = size(mRT_motion,2);
     
-    [tt,xx,ss] = curva_media_hierarch(RT,coh_motion,abs(coh_color),IDX,0);
+    [tt,xx,ss] = curva_media_hierarch(RT,coh_motion,abs(coh_color),IDX_DATA,0);
     % test
 
     if do_average_per_suj_first
-        tt = unique(coh_motion(IDX));
+        tt = unique(coh_motion(IDX_DATA));
         conditions = [coh_motion,abs(coh_color),group];
-        [Mean,Stdev,uni_conditions,tr_per_cond,idx_cond] = average_per_condition(RT, conditions,'filter',IDX);
+        [Mean,Stdev,uni_conditions,tr_per_cond,idx_cond] = average_per_condition(RT, conditions,'filter',IDX_DATA);
         [xx,ss,uni_conditions, tr_per_cond] = average_per_condition(Mean,uni_conditions(:,1:2));
 
         xx = reshape(xx,n,length(xx)/n)';
@@ -331,12 +347,12 @@ for i_serial = 1:length(uni_serial)
     
     p.next();
     n = size(mRT_color,2);
-    [tt,xx,ss] = curva_media_hierarch(RT,coh_color,abs(coh_motion),IDX,0);
+    [tt,xx,ss] = curva_media_hierarch(RT,coh_color,abs(coh_motion),IDX_DATA,0);
     
     if do_average_per_suj_first
-        tt = unique(coh_color(IDX));
+        tt = unique(coh_color(IDX_DATA));
         conditions = [coh_color,abs(coh_motion),group];
-        [Mean,Stdev,uni_conditions,tr_per_cond,idx_cond] = average_per_condition(RT, conditions,'filter',IDX);
+        [Mean,Stdev,uni_conditions,tr_per_cond,idx_cond] = average_per_condition(RT, conditions,'filter',IDX_DATA);
         [xx,ss,uni_conditions,tr_per_cond] = average_per_condition(Mean,uni_conditions(:,1:2));
 
         xx = reshape(xx,n,length(xx)/n)';
@@ -392,7 +408,9 @@ if show_data_pred
         hl(1) = legend(handle_color,{'low','','','','high'});
         set(get(hl(1),'Title'),'String','Color strength')
     else
-        hl(1) = legend_n(unique(abs(d.u_coh_color)),'hline',handle_color,'title','Color strength');
+        hl(1) = legend(handle_color,strjust(num2str(unique(abs(d.u_coh_color))),'left'));
+        set(get(hl(1),'Title'),'String','Color strength')
+        %hl(1) = legend_n(unique(abs(d.u_coh_color)),'hline',handle_color,'title','Color strength');
     end
     
     
@@ -403,7 +421,9 @@ if show_data_pred
         hl(2) = legend(handle_motion,{'low','','','','high'});
         set(get(hl(2),'Title'),'String','Motion strength')
     else
-        hl(2) = legend_n(unique(abs(d.u_coh_motion)),'hline',handle_motion,'title','Motion strength');
+        hl(2) = legend(handle_motion,strjust(num2str(unique(abs(d.u_coh_motion))),'left'));
+        set(get(hl(2),'Title'),'String','Motion strength')
+        %hl(2) = legend_n(unique(abs(d.u_coh_motion)),'hline',handle_motion,'title','Motion strength');
     end
     % ylabel('Proportion "blue" choices')
 end
@@ -466,7 +486,9 @@ set(p.h_ax,'tickdir','out');
 %% save
 
 if do_save
-    export_fig('-pdf',savefilename);
+   
+    export_fig('-pdf', savefilename,'-nocrop','-m5', '-q101');
+    close all;
 end
 
 end

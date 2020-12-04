@@ -7,11 +7,11 @@ if nargin==0
     overwrite = 0;
 end
 
-addpath(genpath('../../default_matlab_ariel_files'));
+addpath(genpath('../matlab_files'));
 
 %%
 
-load('../data/RT_task/data_RT_yul_anne','RT','coh_motion','coh_color','corr_motion','corr_color',...
+load('../data/RT_task/data_RT','RT','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group');
 
 

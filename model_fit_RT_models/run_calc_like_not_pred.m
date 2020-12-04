@@ -6,7 +6,7 @@ end
 
 %%
 
-load('data_RT_yul_anne','RT','coh_motion','coh_color','corr_motion','corr_color',...
+load('../data/RT_task/data_RT','RT','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group');
 
 
@@ -133,7 +133,7 @@ y = diff(v_logl_pred,[],2);
 y = bsxfun(@times,y,adummyvar(combs(:,1)));
 h = barh( y ,'stacked');
 set(h,'barwidth',0.5);
-symmetric_x(gca)
+%symmetric_x(gca)
 hold all
 plot([0,0],ylim,'k','LineWidth',2)
 hold all

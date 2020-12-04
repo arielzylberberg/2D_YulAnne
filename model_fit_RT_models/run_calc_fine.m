@@ -4,11 +4,11 @@ if nargin==0
     overwrite = 0;
 end
 
-addpath(genpath('../../default_matlab_ariel_files'));
+addpath(genpath('../matlab_files'));
 
 %%
 
-load('data_RT_yul_anne','RT','coh_motion','coh_color','corr_motion','corr_color',...
+load('../data/RT_task/data_RT','RT','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group');
 
 
@@ -64,13 +64,13 @@ for j=1:length(file_extensions)
             u_coh_motion = unique(coh_motion(idx));
             u_coh_color = unique(coh_color(idx));
             
-            coh_m = combvec(coh_motion_fine,u_coh_color);
+            coh_m = cartesian_product(coh_motion_fine,u_coh_color);
             n = size(coh_m,1);
             [nlogl,Pmotion_fine,~,E_RT_motion_correct,S_RT_motion_correct] = ...
                 wrapper_2D(theta,coh_m(:,1),coh_m(:,2), nan(n,1),nan(n,1),nan(n,1),...
                 nan(n,1),nan(n,1),serial_flag,  0 );
             
-            coh_c = combvec(u_coh_motion, coh_color_fine);
+            coh_c = cartesian_product(u_coh_motion, coh_color_fine);
             n = size(coh_c,1);
             [nlogl,~,Pcolor_fine,E_RT_color_correct,S_RT_color_correct] = ...
                 wrapper_2D(theta,coh_c(:,1),coh_c(:,2), nan(n,1),nan(n,1),nan(n,1),...
@@ -78,7 +78,7 @@ for j=1:length(file_extensions)
             
             %%
             figure();
-            set(gcf,'Position',[591   72  409  726])
+            set(gcf, 'units','normalized', 'Position',[.1 .1 .4 .7]);
             
             subplot(2,1,1);
             
@@ -94,9 +94,9 @@ for j=1:length(file_extensions)
                 terrorbar(tt,xx(:,k),ss(:,k),'color',colores(k,:),'linestyle','none','marker','o','markersize',8);
                 hold all
             end
-            
+            set(gca,'xlim',[min(tt),max(tt)])
+
             subplot(2,1,2);
-            
             
             [tt,xx,ss] = curva_media_hierarch(E_RT_motion_correct,coh_m(:,1),abs(coh_m(:,2)),[],0);
             for k=1:length(u)
@@ -126,10 +126,10 @@ for j=1:length(file_extensions)
             
             
             format_figure(gcf);
-            set(children,'xlim',[min(tt),max(tt)])
+            set(gca,'xlim',[min(tt),max(tt)])
+            %set(children,'xlim',[min(tt),max(tt)])
             drawnow
-            
-            export_fig('-pdf',fullfile('./finer_coh/',filename));
+            saveas(gcf, fullfile('./finer_coh/',[filename '.pdf'])); %export_fig('-pdf',fullfile('./finer_coh/',filename));
             
             close all
             
@@ -149,10 +149,3 @@ end
 
 %%
 end
-
-
-
-
-
-
-

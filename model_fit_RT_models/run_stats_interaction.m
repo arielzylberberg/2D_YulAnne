@@ -2,7 +2,7 @@
 
 %%
 
-load ../data/RT_task/data_RT_yul_anne.mat
+load ../data/RT_task/data_RT.mat
 
 
 %% Bigger model, more interactions

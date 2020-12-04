@@ -3,12 +3,14 @@ function run_fit_2D()
 %
 % 07/2020 Ariel Zylberberg wrote it (ariel.zylberberg@gmail.com)
 
-fit_type = 0;
+fit_type = 0; % use for most figures (except for some of uni-/bimanual)
+% 0 = just use the highest coh
+% 1 = use all coherence levels
 
-addpath(genpath('../../default_matlab_ariel_files'));
+addpath(genpath('../matlab_files'));
 
 %%
-load('../data/RT_task/data_RT_yul_anne','RT','coh_motion','coh_color','corr_motion','corr_color',...
+load('../data/RT_task/data_RT','RT','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group');
 
 %% all unique combs
@@ -38,6 +40,7 @@ tg = (tl + th)/2;
 plot_flag = false;
 % pars = struct('USfunc','Logistic');
 
+isLocalComputer = 1;
 if ~isLocalComputer
     parpool(18);
 end
@@ -51,7 +54,8 @@ rng(223123,'twister');
 
 parfor i=1:size(combs,1)
     % for i=1:size(combs,1)
-    
+    tic
+    clc
     I = dataset==combs(i,1) & group==combs(i,2) & bimanual==combs(i,3) & ~isnan(RT);
     serial_flag = combs(i,4);
     
@@ -96,7 +100,7 @@ parfor i=1:size(combs,1)
         save_parallel(filename,struct_to_save);
         
     end
-    
+    toc
 end
 
 

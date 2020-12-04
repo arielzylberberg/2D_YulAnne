@@ -3,11 +3,11 @@ function run_fig2_per_suj()
 %
 % 07/2020 Ariel Zylberberg wrote it (ariel.zylberberg@gmail.com)
 
-addpath(genpath('../../default_matlab_ariel_files'));
+addpath(genpath('../matlab_files'))
 
 %%
 
-load('../data/RT_task/data_RT_yul_anne','RT','coh_motion','coh_color','corr_motion','corr_color',...
+load('../data/RT_task/data_RT','RT','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group','SignedColorStrengthLogodds');
 
 % plot color in log scale
@@ -25,9 +25,9 @@ uni_group_hand = unique(group(dataset==2));
 
 fit_type = 0;
 if fit_type == 0
-    savefilename = 'fig_RT_PER_SUJ.pdf';
+    savefilename = 'fig_RT_per_subject/fig_RT_PER_SUJ.pdf';
 else
-    savefilename = 'fig_RT_PER_SUJ_allcoh.pdf';
+    savefilename = 'fig_RT_per_subject/fig_RT_PER_SUJ_allcoh.pdf';
 end
 
 show_delta_log_in_title = 0;
@@ -328,10 +328,14 @@ for iDataset=0:1
                 p.current_ax(1);
                 u = unique(abs(d.u_coh_color));
                 u = redondear(u,3);
-                hl(1) = legend_n(u,'hline',handle_color,'title','Color strength');
+                hl(1) = legend(handle_color,strjust(num2str(unique(abs(d.u_coh_color))),'left'));
+                set(get(hl(1),'Title'),'String','Color strength')
+                %hl(1) = legend_n(u,'hline',handle_color,'title','Color strength');
                 
                 p.current_ax(2);
-                hl(2) = legend_n(unique(abs(d.u_coh_motion)),'hline',handle_motion,'title','Motion strength');
+                hl(2) = legend(handle_motion,strjust(num2str(unique(abs(d.u_coh_motion))),'left'));
+                set(get(hl(2),'Title'),'String','Motion strength')
+                %hl(2) = legend_n(unique(abs(d.u_coh_motion)),'hline',handle_motion,'title','Motion strength');
                 % ylabel('Proportion "blue" choices')
                 
                 
@@ -383,10 +387,11 @@ for iDataset=0:1
             
             %%
             if fit_type==0
-                export_fig('-pdf',savefilename,'-append');
+                export_fig('-pdf',[savefilename '_S' num2str(suj_num)],'-append');
             else
-                export_fig('-pdf','fig_RT_PER_SUJ_allcoh.pdf','-append');
+                export_fig('-pdf',['fig_RT_per_subject/fig_RT_PER_SUJ_allcoh' '_S' num2str(suj_num) '.pdf'],'-append');
             end
+            
         end
         
     end
