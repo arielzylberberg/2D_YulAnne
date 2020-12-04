@@ -1,4 +1,4 @@
-%rainbow_colors    [C] = rainbow_colors(n,'colortype',num)
+%rainbow_colors    [C] = rainbow_colors(n)
 %
 % returns a set of n colors following a
 % stretch of the rainbow.

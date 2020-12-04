@@ -30,5 +30,3 @@ for idrift = 1:nd
     aux(inds,:) = -dt/dy * repmat([m1,m2,m3],ny,1);
 end
 M = spdiags(aux,-1:1,ny*nd,ny*nd);
-
-
