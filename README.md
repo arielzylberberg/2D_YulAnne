@@ -41,6 +41,8 @@
 (YK wrote this part of the code.)
 
 ## Figure 5 and Figure 5 supplement 1
+ * In MATLAB, go to folder `model_fit_RT_models` and run `run_fig2(2,1,0)` from command window (for re-fitting of model, see instructions above for main Fig 2) 
+ 
 (AZ wrote this part of the code.)
 
 ## Figure 5 supplement 2
