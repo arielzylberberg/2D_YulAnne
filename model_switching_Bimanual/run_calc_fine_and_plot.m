@@ -5,7 +5,7 @@ function run_calc_fine_and_plot(do_recalc_fine)
 %%
     
 addpath('../model_fit_RT_models/')
-dat = load('../data/RT_task/data_RT_yul_anne.mat','RT','RT1','coh_motion','coh_color','corr_motion','corr_color',...
+dat = load('../data/RT_task/data_RT.mat','RT','RT1','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group','color_responded_first');
 
 filt = dat.dataset==2 & dat.bimanual==1;
@@ -92,6 +92,9 @@ hold all
 terrorbar(tt,nanmean(xx,2),stderror(xx'),'color','k','linestyle','none','marker','.')
 hold off
 ylabel('RT first response (s)')
+set(gca, 'YLim', [.5 2]);
+title('A', 'FontSize', 24, 'FontWeight', 'normal'); 
+set(get(gca,'title'),'unit','norm','Position',[.08 .91]);
 
 p.next();
 plot(coh_color_fine, squeeze(nanmean(y_mc)))
@@ -99,6 +102,9 @@ hold all
 % [tt,xx,ss] = curva_media(dat.RT1,dat.coh_color, idx & dat.color_responded_first==0,3);
 [tt,xx]=curva_media_hierarch(dat.RT1,dat.coh_color,dat.group,idx & dat.color_responded_first==0,0);
 terrorbar(tt,nanmean(xx,2),stderror(xx'),'color','k','linestyle','none','marker','.')
+set(gca, 'YLim', [.5 2]);
+title('B', 'FontSize', 24, 'FontWeight', 'normal'); 
+set(get(gca,'title'),'unit','norm','Position',[.08 .91]);
 hold off
 
 p.next();
@@ -109,6 +115,9 @@ terrorbar(tt,nanmean(xx,2),stderror(xx'),'color','k','linestyle','none','marker'
 hold off
 xlabel('Motion strength (coh.)')
 ylabel('RT first response (s)')
+set(gca, 'YLim', [.5 2]);
+title('C', 'FontSize', 24, 'FontWeight', 'normal'); 
+set(get(gca,'title'),'unit','norm','Position',[.08 .91]);
 
 p.next();
 plot(coh_color_fine, squeeze(nanmean(y_cc)))
@@ -118,6 +127,9 @@ hold all
 terrorbar(tt,nanmean(xx,2),stderror(xx'),'color','k','linestyle','none','marker','.')
 hold off
 xlabel('Color strength (coh.)')
+set(gca, 'YLim', [.5 2]);
+title('D', 'FontSize', 24, 'FontWeight', 'normal'); 
+set(get(gca,'title'),'unit','norm','Position',[.08 .91]);
 % same_ylim(p.h_ax)
 % p.format();
 
@@ -206,8 +218,8 @@ for isuj=1:nsuj
     s = sprintf('isi [s]: %2.2f, p_{motion-1st}:%2.2f, t_{ndf}[s]:%2.2f',  ....
         f.v_theta(isuj,1)*1.5,1-f.v_theta(isuj,2),f.v_theta(isuj,3));
     
-    ha = annotate_top_of_figure('Best fit parameters:',0.07,15);
-    ha = annotate_top_of_figure(s,0.14,15);
+    %ha = annotate_top_of_figure('Best fit parameters:',0.07,15);
+    %ha = annotate_top_of_figure(s,0.14,15);
 
     same_ylim(p.h_ax);
     maxi = max(dat.coh_motion(idx));
@@ -215,7 +227,7 @@ for isuj=1:nsuj
     maxi = max(dat.coh_color(idx));
     set(p.h_ax([2,4]),'xlim',[-maxi,maxi])
 
-    export_fig('-pdf','fig_switching_for_paper_PER_SUJ','-append');
+    %export_fig('-pdf','fig_switching_for_paper_PER_SUJ','-append');
 
 
 end
@@ -255,7 +267,7 @@ plot([m-se,m+se],[0,0],'LineWidth',6,'color',color);
 
 set(gca,'xscale','log','xtick',[0.1,1,10],'xticklabel',{'0.1','1','10'},'XminorTick','on',...
     'ytick',1:length(ind))
-arrow([m,0.8],[m,0],'Length',10,'facecolor',color,'edgecolor',color,'linewidth',2);
+%arrow([m,0.8],[m,0],'Length',10,'facecolor',color,'edgecolor',color,'linewidth',2);
 % text(m-0.45,0.4,[num2str(redondear(m,2)),' s'],'color',color);
 text(m-0.25,0.4,[num2str(redondear(m,2))],'color',color,'horizontalalignment','center');
 xlabel('Mean time between switches (s)')
@@ -289,7 +301,7 @@ plot([0,0],[m-se,m+se],'LineWidth',6,'color',color);
 
 set(gca,'yscale','log','ytick',[0.1,1,10],'yticklabel',{'0.1','1','10'},'YminorTick','on',...
     'xtick',1:length(ind),'tickdir','out')
-arrow([0.8,m],[0,m],'Length',10,'facecolor',color,'edgecolor',color,'linewidth',2);
+%arrow([0.8,m],[0,m],'Length',10,'facecolor',color,'edgecolor',color,'linewidth',2);
 % text(m-0.45,0.4,[num2str(redondear(m,2)),' s'],'color',color);
 text(0.8,m-0.15,[num2str(redondear(m,2))],'color',color,'horizontalalignment','center');
 

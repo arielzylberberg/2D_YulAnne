@@ -4,7 +4,7 @@ function run_do_fit(redo_fit)
 
 addpath('../model_fit_RT_models/');
 datadir = '../data/RT_task/';
-dat = load(fullfile(datadir,'data_RT_yul_anne'),'RT','RT1','coh_motion','coh_color','corr_motion','corr_color',...
+dat = load(fullfile(datadir,'data_RT'),'RT','RT1','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group','color_responded_first');
 
 
