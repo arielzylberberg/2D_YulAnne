@@ -22,6 +22,8 @@
 (YK wrote this part of the code.)
 
 ## Figure 3
+ * In MATLAB, go to `analysis_short_Dur_exp` folder and run `run_analysis_short_dur_data.m`
+
 (AZ wrote this part of the code.)
 
 ## Figure 4
