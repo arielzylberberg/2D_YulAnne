@@ -47,6 +47,8 @@
  (AL wrote this part of the code)
 
 ## Figure 6
+ * In MATLAB, go to `model_switching_Bimanual` folder and run `run_all_analysis.m`
+ 
 (AZ wrote this part of the code.)
 
 ## Figure 7 and Figure 7 supplement 1
