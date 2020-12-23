@@ -84,7 +84,10 @@ set(ha,'linestyle','none','fontsize',14,'horizontalalignment','center');
 
 
 %
-idx = filt;
+dat.corr = (dat.corr_motion | dat.coh_motion  == 0) & (dat.corr_color | dat.coh_color == 0);
+
+%
+idx = filt & dat.corr;
 p.next();
 plot(coh_motion_fine, squeeze(nanmean(y_mm)))
 hold all

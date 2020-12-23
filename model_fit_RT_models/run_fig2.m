@@ -31,7 +31,8 @@ I = dataset==1;
 coh_color(I) = SignedColorStrengthLogodds(I);
 
 IDX_DATA = dataset == dataset_num & bimanual == bimanual_flag & ~isnan(RT); % NEW: index for data points (not fits)
-
+% idx for correct trials (and all 0% coherence trials) for RT plots
+IDX_DATA_CORR = IDX_DATA & (corr_color | coh_color == 0) & (corr_motion | coh_motion == 0);
 
 %%
 
@@ -123,18 +124,7 @@ for i_serial = 1:length(uni_serial)
         fullname = fullfile('./finer_coh/',filename);
         
         d = load(fullname);
-          
-%         % when plotting bimanual data with unimanual fits, load unimanual
-%         % fits
-%         if bimanual_flag == 1 && always_use_monomanual_fits == 1
-%             d_uni = load(['./finer_coh/' str '_d',num2str(combs(i,1)),'_s',num2str(combs(i,2)),'_b0',extension,'.mat']);
-%             % overwrite fits to get unimanual predictions
-%             d.coh_motion_fine = d_uni.coh_motion_fine;
-%             d.Pmotion_fine = d_uni.Pmotion_fine;
-%             d.coh_color_fine = d_uni.coh_color_fine;
-%             d.Pcolor_fine = d_uni.Pcolor_fine;
-%         end
-        
+                 
         IDX = IDX | d.idx;
         count(i) = sum(d.idx);
         d.coh_m = fix(d.coh_m*1e6)/1e6; % needs some rounding to make unique work - annoying
@@ -302,13 +292,15 @@ for i_serial = 1:length(uni_serial)
     end
     n = size(mRT_motion,2);
     
-    [tt,xx,ss] = curva_media_hierarch(RT,coh_motion,abs(coh_color),IDX_DATA,0);
+
+    
+    [tt,xx,ss] = curva_media_hierarch(RT,coh_motion,abs(coh_color),IDX_DATA_CORR,0);
     % test
 
     if do_average_per_suj_first
         tt = unique(coh_motion(IDX_DATA));
         conditions = [coh_motion,abs(coh_color),group];
-        [Mean,Stdev,uni_conditions,tr_per_cond,idx_cond] = average_per_condition(RT, conditions,'filter',IDX_DATA);
+        [Mean,Stdev,uni_conditions,tr_per_cond,idx_cond] = average_per_condition(RT, conditions,'filter',IDX_DATA_CORR);
         [xx,ss,uni_conditions, tr_per_cond] = average_per_condition(Mean,uni_conditions(:,1:2));
 
         xx = reshape(xx,n,length(xx)/n)';
@@ -347,12 +339,12 @@ for i_serial = 1:length(uni_serial)
     
     p.next();
     n = size(mRT_color,2);
-    [tt,xx,ss] = curva_media_hierarch(RT,coh_color,abs(coh_motion),IDX_DATA,0);
+    [tt,xx,ss] = curva_media_hierarch(RT,coh_color,abs(coh_motion),IDX_DATA_CORR,0);
     
     if do_average_per_suj_first
         tt = unique(coh_color(IDX_DATA));
         conditions = [coh_color,abs(coh_motion),group];
-        [Mean,Stdev,uni_conditions,tr_per_cond,idx_cond] = average_per_condition(RT, conditions,'filter',IDX_DATA);
+        [Mean,Stdev,uni_conditions,tr_per_cond,idx_cond] = average_per_condition(RT, conditions,'filter',IDX_DATA_CORR);
         [xx,ss,uni_conditions,tr_per_cond] = average_per_condition(Mean,uni_conditions(:,1:2));
 
         xx = reshape(xx,n,length(xx)/n)';
