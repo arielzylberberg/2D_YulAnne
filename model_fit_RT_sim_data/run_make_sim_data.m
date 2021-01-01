@@ -1,10 +1,10 @@
 % in prep
 
-addpath(genpath('../../default_matlab_ariel_files'));
+addpath(genpath('../matlab_files'));
 
 %%
 
-dat = load('../model_serial_fokker_planck/data_RT_yul_anne','RT','coh_motion','coh_color','corr_motion','corr_color',...
+dat = load('../data/RT_task/data_RT','RT','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group');
 struct2vars(dat);
 
@@ -52,13 +52,13 @@ for i_serial=0:1
         filename = [str,'_d',num2str(combs(i,1)),'_s',num2str(combs(i,2)),'_b',num2str(combs(i,3)),file_extensions,'.mat'];
         % filename = [str,'_d',num2str(combs(i,1)),'_s',num2str(combs(i,2)),'_b',num2str(combs(i,3)),'_fullcoh.mat'];
         
-        fullname = fullfile('../model_serial_fokker_planck/from_fits/',filename);
+        fullname = fullfile('../model_fit_RT_models/from_fits/',filename);
         aux = load(fullname);
         
         ndt_m = aux.theta(end-1);
         ndt_s = aux.theta(end);
         
-        fullname = fullfile('../model_serial_fokker_planck/full_dist/',filename);
+        fullname = fullfile('../model_fit_RT_models/full_dist/',filename);
         
         %             save(savefilename,'dist','Pmotion','Pcolor','idx');
         d = load(fullname,'dist','idx','pPred','Pmotion','Pcolor');

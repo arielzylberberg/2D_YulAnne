@@ -1,6 +1,6 @@
 function run_fit_2D(fit_type, groundtruth_serial_flag)
 
-addpath('../model_serial_fokker_planck/');
+addpath('../model_fit_RT_models/');
 
 % fit_type: 0 [pred based on highest coh], 1 [fit with all trials], 2 [ignore first ~200 trials];
 
@@ -8,7 +8,7 @@ if nargin==0
     fit_type = 0;% Just fit when one of the coh is highest
 end
 
-addpath(genpath('../../default_matlab_ariel_files'));
+addpath(genpath('../matlab_files'));
 
 %%
 
@@ -56,8 +56,9 @@ tg = (tl + th)/2;
 plot_flag = false;
 % pars = struct('USfunc','Logistic');
 
+isLocalComputer = 1;
 if ~isLocalComputer
-    parpool(12);
+    parpool(18);
 end
 
 % overwrite = false; 
