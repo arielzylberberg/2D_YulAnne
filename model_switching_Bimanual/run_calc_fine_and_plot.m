@@ -3,8 +3,11 @@ function run_calc_fine_and_plot(do_recalc_fine)
 % 07-2020 Ariel Zylberberg wrote it (ariel.zylberberg@gmail.com)
 
 %%
-    
+do_fig_per_subject = 0;
+
 addpath('../model_fit_RT_models/')
+addpath(genpath('../matlab_files/'));
+
 dat = load('../data/RT_task/data_RT.mat','RT','RT1','coh_motion','coh_color','corr_motion','corr_color',...
     'choice_color','choice_motion','bimanual','dataset','group','color_responded_first');
 
@@ -121,6 +124,7 @@ ylabel('RT first response (s)')
 set(gca, 'YLim', [.5 2]);
 title('C', 'FontSize', 24, 'FontWeight', 'normal'); 
 set(get(gca,'title'),'unit','norm','Position',[.08 .91]);
+%legend('Single-switch model','Multi-switch model');
 
 p.next();
 plot(coh_color_fine, squeeze(nanmean(y_cc)))
@@ -158,7 +162,7 @@ export_fig('-pdf','fig_switching_for_paper');
 
 
 %% fig for paper, per suj
-
+if do_fig_per_subject
 nsuj = size(y_mm,1);
 !rm fig_switching_for_paper_PER_SUJ.pdf
 uni_group = unique(dat.group(filt));
@@ -234,7 +238,7 @@ for isuj=1:nsuj
 
 
 end
-
+end
 
 %% plot of isi's
 

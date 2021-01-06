@@ -14,6 +14,10 @@ load('../data/RT_task/data_RT','RT','coh_motion','coh_color','corr_motion','corr
 % coh_color = SignedColorStrengthLogodds;
 coh_color = fix(coh_color*1e6)/1e6;
 
+% idx for correct trials (and all 0% coherence trials) for RT plots
+IDX_DATA_CORR = (corr_color | coh_color == 0) & (corr_motion | coh_motion == 0);
+
+
 %% all unique combs
 
 all_combs = unique([dataset,group,bimanual],'rows');
@@ -218,7 +222,7 @@ for iDataset=0:1
                     p.current_ax(3);
                 end
                 n = size(mRT_motion,2);
-                [tt,xx,ss] = curva_media_hierarch(RT,coh_motion,abs(coh_color),IDX,0);
+                [tt,xx,ss] = curva_media_hierarch(RT,coh_motion,abs(coh_color),IDX & IDX_DATA_CORR,0);
                 for i=1:n
                     plot(d.coh_motion_fine,nanmean(mRT_motion(:,i,:),3),'color',colores1(i,:))
                     hold all
@@ -243,7 +247,7 @@ for iDataset=0:1
                 
                 p.next();
                 n = size(mRT_color,2);
-                [tt,xx,ss] = curva_media_hierarch(RT,coh_color,abs(coh_motion),IDX,0);
+                [tt,xx,ss] = curva_media_hierarch(RT,coh_color,abs(coh_motion),IDX & IDX_DATA_CORR,0);
                 for i=1:n
                     plot(d.coh_color_fine,nanmean(mRT_color(:,i,:),3),'color',colores2(i,:))
                     hold all

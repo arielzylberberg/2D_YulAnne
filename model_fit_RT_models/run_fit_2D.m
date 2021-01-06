@@ -3,7 +3,7 @@ function run_fit_2D()
 %
 % 07/2020 Ariel Zylberberg wrote it (ariel.zylberberg@gmail.com)
 
-fit_type = 0; % use for most figures (except for some of uni-/bimanual)
+fit_type = 1; % use for most figures (except for some of uni-/bimanual)
 % 0 = just use the highest coh
 % 1 = use all coherence levels
 
