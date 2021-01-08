@@ -101,13 +101,13 @@ for subj = 1:length(IDs)
                 
                 if plotNum == 1
                     title({['S' num2str(IDs(subj))],''},'FontSize',24,'FontWeight', 'bold');
-                    legend([h_data h_serial h_parallel], {'Data','Serial','Parallel'},'Location','SouthEast','box','off','Interpreter','latex','TextColor',[0,0,0]);
+                    legend([h_data h_serial h_parallel], {'Data','Serial','Parallel'},'Location','SouthEast','box','off','TextColor',[0,0,0]);
                 end
                 
                 set(gca,'XLim',[0 4500], 'XTick', [0:1000:4000]);
                 if plotNum > 4
                     set(gca, 'XTickLabel', {'0','1','2','3','4'});
-                    xlabel('RT (s)','Interpreter','latex');
+                    xlabel('RT (s)');
                 else
                     set(gca,'XTickLabel', []);
                 end
@@ -137,8 +137,6 @@ end
 % also save xMin_sum and xMin_max = best-fitting parameters for each subject
 save('results_RTmodel.mat','xMin_sum','xMin_max','RTsum_2D_means','RTmax_2D_means');
     
-log10(BF)
-
 
 %% Function running RT model
 function [nlogl,RT_mean,RT_distr] = model2D_RT(fitParams, D, model)

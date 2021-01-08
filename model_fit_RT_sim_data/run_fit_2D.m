@@ -1,28 +1,44 @@
-function run_fit_2D()
-% function run_fit_2D()
-%
-% 07/2020 Ariel Zylberberg wrote it (ariel.zylberberg@gmail.com)
+function run_fit_2D(fit_type, groundtruth_serial_flag)
 
-fit_type = 1; % use for most figures (except for some of uni-/bimanual)
-% 0 = just use the highest coh
-% 1 = use all coherence levels
+addpath('../model_fit_RT_models/');
+
+% fit_type: 0 [pred based on highest coh], 1 [fit with all trials], 2 [ignore first ~200 trials];
+
+if nargin==0
+    fit_type = 0;% Just fit when one of the coh is highest
+end
 
 addpath(genpath('../matlab_files'));
 
 %%
-load('../data/RT_task/data_RT','RT','coh_motion','coh_color','corr_motion','corr_color',...
-    'choice_color','choice_motion','bimanual','dataset','group');
+
+if groundtruth_serial_flag
+    aux = load('simdata_RT_yul_anne_serial','RT','coh_motion','coh_color','corr_motion','corr_color',...
+         'choice_color','choice_motion','bimanual','dataset','group');
+else
+    aux = load('simdata_RT_yul_anne_parallel','RT','coh_motion','coh_color','corr_motion','corr_color',...
+        'choice_color','choice_motion','bimanual','dataset','group');
+end
+
+I = ~isnan(aux.RT);
+dataset = aux.dataset(I); % otherwise, conflict with matlab 2020
+RT = aux.RT(I);
+coh_motion = aux.coh_motion(I);
+coh_color = aux.coh_color(I);
+corr_motion = aux.corr_motion(I);
+corr_color = aux.corr_color(I);
+choice_color = aux.choice_color(I);
+choice_motion = aux.choice_motion(I);
+bimanual = aux.bimanual(I);
+group = aux.group(I);
 
 %% all unique combs
 combs = unique([dataset,group,bimanual],'rows');
+% combs = unique([1,1,0],'rows');
 
 % serial and parallel
 nn = size(combs,1);
 combs = [[combs;combs], [ones(nn,1);zeros(nn,1)]];
-
-% combs = combs(combs(:,1)==1,:); % just refit yul
-% combs = [1,1,0,1;1,1,0,0];
-
 
 %% fit to a subset of trials
 
@@ -48,14 +64,9 @@ end
 % overwrite = false; 
 overwrite = true;
 
-
-rng(223123,'twister');
-
-
 parfor i=1:size(combs,1)
     % for i=1:size(combs,1)
-    tic
-    clc
+    
     I = dataset==combs(i,1) & group==combs(i,2) & bimanual==combs(i,3) & ~isnan(RT);
     serial_flag = combs(i,4);
     
@@ -75,6 +86,12 @@ parfor i=1:size(combs,1)
     end
     
     filename = [str,'_d',num2str(combs(i,1)),'_s',num2str(combs(i,2)),'_b',num2str(combs(i,3)),filename_ext,'.mat'];
+    
+    if groundtruth_serial_flag
+        filename = fullfile('from_fits_groundtruth_serial',filename);
+    else
+        filename = fullfile('from_fits_groundtruth_parallel',filename);
+    end
     
     %%
     
@@ -100,8 +117,9 @@ parfor i=1:size(combs,1)
         save_parallel(filename,struct_to_save);
         
     end
-    toc
+    
 end
+
 
 
 

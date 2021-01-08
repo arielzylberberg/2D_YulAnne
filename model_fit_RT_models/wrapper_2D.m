@@ -5,12 +5,14 @@ function [nlogl,Pmotion,Pcolor,E_RT_correct,S_RT_correct,pPred,dist] = wrapper_2
 
 % theta = [10,1,0.1,0.5,0, 10,1,0.1,0.5,0, 0.5, 0.05]; 
 
-mo.kappa  = theta(1);
-mo.B0     = theta(2);
-mo.a      = theta(3);
-mo.d      = theta(4);
-mo.coh0   = theta(5);
+% motion parameters
+mo.kappa  = theta(1); % kappa/drift
+mo.B0     = theta(2); % bound
+mo.a      = theta(3); % collapsing bound
+mo.d      = theta(4); % 
+mo.coh0   = theta(5); % coherence bias
 
+% color parameters
 c.kappa  = theta(6);
 c.B0     = theta(7);
 c.a      = theta(8);
@@ -53,7 +55,7 @@ for l = 1:2 % choice_motion
             chm = str{l};
             chc = str{m};
             
-            % for speed
+            % for serial
             % serial_flag = 0; % read it from elsewhere
             if serial_flag
                 imax1 = find(cumsum(Pmotion.(chm).pdf_t(i,:))>0.99999 * sum(Pmotion.(chm).pdf_t(i,:)),1);
@@ -219,7 +221,7 @@ if do_plot
     
     subplot(4,1,3)
     cla
-    K = corr_motion==1 & corr_color == 1;
+    K = (corr_color | coh_color == 0) & (corr_motion | coh_motion == 0); %corr_motion==1 & corr_color == 1;
     curva_media(RT,coh_motion,abs(coh_color)==max(abs(coh_color)) & K,3);
     hold all
     curva_media(RT,coh_motion,abs(coh_color)==min(abs(coh_color)) & K,3);
