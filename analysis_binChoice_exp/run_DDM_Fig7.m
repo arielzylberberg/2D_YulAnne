@@ -59,10 +59,10 @@ for subj = 1:length(IDs)
     
     
     % optimise parameters
-    [theta_opt] = fmincon(@(theta) dtb_cost_means(theta,D),theta,[],[],[],[],theta_lo,theta_hi,[]);
+    [theta_opt{subj}] = fmincon(@(theta) dtb_cost_means(theta,D),theta,[],[],[],[],theta_lo,theta_hi,[]);
     
     % run optimised model
-    [nlog, Rfit{subj}]=dtb_cost_means(theta_opt,D);
+    [nlog, Rfit{subj}]=dtb_cost_means(theta_opt{subj},D);
         
     
     %% plot results
@@ -146,7 +146,7 @@ for subj = 1:length(IDs)
 end
 
 %% save optimized model predictions
-save(['results_DDM.mat'], 'Rfit');
+save(['results_DDM.mat'], 'Rfit','theta_opt');
 
 
 %% function to fit DDM
