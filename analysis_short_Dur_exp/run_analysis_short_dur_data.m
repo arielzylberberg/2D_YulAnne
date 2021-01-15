@@ -3,7 +3,7 @@ function run_analysis_short_dur_data()
 % 
 % 07-2020 Ariel Zylberberg wrote it (ariel.zylberberg@gmail.com)
 
-addpath('../matlab_files/')
+addpath(genpath('../matlab_files/'));
 
 %%
 
@@ -13,8 +13,8 @@ m = load('../data/Short_Dur/me.mat');
 
 %%
 % convert logodds to coh_color
-pblue = exp(coh_color)./(1+exp(coh_color));
-coh_color = 2*pblue-1; % overwrite
+%pblue = exp(coh_color)./(1+exp(coh_color));
+%coh_color = 2*pblue-1; % overwrite
             
 %% rescale the motion and color energy to the max
 
@@ -95,6 +95,8 @@ symmetric_y(p.h_ax);
 drawnow
 p.displace_ax(1,-0.05,2)
 
+export_fig('-pdf', 'fig_for_paper_me','-nocrop','-m5', '-q101');
+
 %% choice
 
 p = publish_plot(2,2);
@@ -163,6 +165,8 @@ hl(1) = text(0.3,0.6,'single task','color',colores(1,:));
 hl(2) = text(0.3,0.45,'double task','color',colores(2,:));
 % set(gca,'ycolor','none','xcolor','none');
 
+
+%% RTs
 p.next();
 [tt1,xx1,ss1] = curva_media(RT,coh_motion,task=='H',0);
 [tt2,xx2,ss2] = curva_media(RT,coh_motion,task=='A',0);
@@ -204,5 +208,6 @@ set(p.h_ax([2,4]),'xlim',[-0.9,0.9],'xtick',[-0.5,0,0.5]);
 set(p.h_ax,'tickdir','out');
 p.format('FontSize',14,'LineWidthAxes',1);
 
+export_fig('-pdf', 'fig_for_paper','-nocrop','-m5', '-q101');
 
 end
