@@ -26,9 +26,6 @@ uCoh = unique(abs(data.coh1)); % get unique unsigned coherence levels
 % load RT gamma model predictions
 load(['results_RTmodel.mat']);
 
-% load choice-RT DDM predictions
-load(['results_DDM.mat']);
-
 
 %% plot results
 set(0,'DefaultAxesBox', 'off',...
@@ -56,14 +53,13 @@ for subj = 1:length(IDs)
     
     % get mean for each condition from data and DDM model
     % only get 2D trial conditions (cond >= 5)
-    RT_mean = []; RT_se = []; RT_ddm = [];
+    RT_mean = []; RT_se = [];
     for cond = 5:max(D.cohCond)
         trialIDs = D.cohCond == cond;
         
         % get RTs
         RT_mean = [RT_mean; nanmean(D.rt(trialIDs))];
         RT_se = [RT_se; nanstd(D.rt(trialIDs))/sqrt(sum(trialIDs))];
-        RT_ddm = [RT_ddm; nanmean(Rfit{subj}.rt(Rfit{subj}.cohCond == cond))];
     end
     
     % get mean RTs from serial/parallel gamma model
@@ -93,10 +89,7 @@ for subj = 1:length(IDs)
         h2 = plot([i-.34, i+.349],[RTser(i)/1000, RTser(i)/1000],'-','LineWidth',2.5,'Color','r');
         
         % parallel
-        h4 = plot([i-.34, i+.349],[RTpar(i)/1000, RTpar(i)/1000],'-','LineWidth',2.5,'Color','b');
-        
-        % DDM
-        h3 = plot([i-.34, i+.349],[RT_ddm(i), RT_ddm(i)],':','LineWidth',2.5,'Color',[.65 0.1 0]);
+        h3 = plot([i-.34, i+.349],[RTpar(i)/1000, RTpar(i)/1000],'-','LineWidth',2.5,'Color','b');
         
     end
     
@@ -107,7 +100,7 @@ for subj = 1:length(IDs)
     % define axes and labels
     xlabel({'','Coherence condition'}); ylabel('RT (s)');
     set(gca,'Xlim', [0 length(RT_mean)+1], 'XTick', [1:length(RT_mean)], 'XTickLabel',{'LL', 'LM','LH','MM','MH','HH'},'Ylim', [.3 2.3],'YTick', [.5:.5:2],'tickdir', 'out');
-    legend([h1 h2 h3 h4], {'Data', 'Serial', 'Serial DDM', 'Parallel'}, 'Location', 'NorthEast', 'box','off','Interpreter','latex');
+    legend([h1 h2 h3], {'Data', 'Serial', 'Parallel'}, 'Location', 'NorthEast', 'box','off','Interpreter','latex');
 
 end
 

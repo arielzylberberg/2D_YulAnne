@@ -73,6 +73,13 @@ for subj = 1:length(IDs)
     [~, RTmax_2D_means{subj},RTmax_distr{subj}]=model2D_RT(xMin_max(:,subj), D, 'max');
 
     
+    % compute BICs and BF
+    BIC_sum(subj) = 2*fval_sum(subj)+length(fitParams)*log(length(D.subjID));
+    BIC_max(subj) = 2*fval_max(subj)+length(fitParams)*log(length(D.subjID));
+    % save BF for each subject
+    BF(subj) = exp((BIC_max(subj)-BIC_sum(subj))/2);
+    
+    
     %% plot results   
     set(0,'DefaultAxesBox', 'off',...
         'DefaultAxesFontSize',18,...
@@ -137,6 +144,9 @@ end
 % also save xMin_sum and xMin_max = best-fitting parameters for each subject
 save('results_RTmodel.mat','xMin_sum','xMin_max','RTsum_2D_means','RTmax_2D_means');
     
+% show log10 BF (positive values are support for serial model)
+logBF = log10(BF)
+
 
 %% Function running RT model
 function [nlogl,RT_mean,RT_distr] = model2D_RT(fitParams, D, model)

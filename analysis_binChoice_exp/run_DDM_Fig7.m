@@ -58,11 +58,19 @@ for subj = 1:length(IDs)
     % tnd2=theta(6); % non-decision time for 2D
     
     
-    % optimise parameters
-    [theta_opt{subj}] = fmincon(@(theta) dtb_cost_means(theta,D),theta,[],[],[],[],theta_lo,theta_hi,[]);
+    % optimise parameters for serial & parallel model
+    [theta_opt_sum{subj}, fval_sum(subj)] = fmincon(@(theta) dtb_cost_means(theta,D,'sum'),theta,[],[],[],[],theta_lo,theta_hi,[]);
+    [theta_opt_max{subj}, fval_max(subj)] = fmincon(@(theta) dtb_cost_means(theta,D,'max'),theta,[],[],[],[],theta_lo,theta_hi,[]);
+
+    % run optimised serial & parallel model
+    [nlog_sum, Rfit_sum{subj}]=dtb_cost_means(theta_opt_sum{subj},D,'sum');
+    [nlog_max, Rfit_max{subj}]=dtb_cost_means(theta_opt_max{subj},D,'max');
     
-    % run optimised model
-    [nlog, Rfit{subj}]=dtb_cost_means(theta_opt{subj},D);
+    % compute BICs and BF
+    BIC_sum(subj) = 2*fval_sum(subj)+length(theta)*log(length(D.subjID));
+    BIC_max(subj) = 2*fval_max(subj)+length(theta)*log(length(D.subjID));
+    % save BF for each subject
+    BF(subj) = exp((BIC_max(subj)-BIC_sum(subj))/2);
         
     
     %% plot results
@@ -79,13 +87,15 @@ for subj = 1:length(IDs)
         
         % get choices
         Corr_mean(cond) = nanmean(D.correct(tr)); % data mean
-        Corr_se(cond) = sqrt(Corr_mean(cond)*(1-Corr_mean(cond))/sum(tr));  % data SE 
-        Corr_pred(cond) = mean(Rfit{subj}.pcorrect(Rfit{subj}.cohCond == cond)); % DDM prediction (average of negative and positive choices)
+        Corr_se(cond) = sqrt(Corr_mean(cond)*(1-Corr_mean(cond))/sum(tr));  % data SE
+        Corr_pred_sum(cond) = mean(Rfit_sum{subj}.pcorrect(Rfit_sum{subj}.cohCond == cond)); % serial DDM prediction (average of negative and positive choices)
+        Corr_pred_max(cond) = mean(Rfit_max{subj}.pcorrect(Rfit_max{subj}.cohCond == cond)); % parallel DDM prediction (average of negative and positive choices)
         
         % get RTs
-        RT_mean(cond) = nanmean(D.rt(tr & D.incl_rt)); % data mean 
-        RT_se(cond) = nanstd(D.rt(tr & D.incl_rt))/sqrt(sum(tr & D.incl_rt)); % data SE 
-        RT_pred(cond) = mean(Rfit{subj}.rt(Rfit{subj}.cohCond == cond)); % DDM prediction (average of negative and positive choices)
+        RT_mean(cond) = nanmean(D.rt(tr & D.incl_rt)); % data mean
+        RT_se(cond) = nanstd(D.rt(tr & D.incl_rt))/sqrt(sum(tr & D.incl_rt)); % data SE
+        RT_pred_sum(cond) = mean(Rfit_sum{subj}.rt(Rfit_sum{subj}.cohCond == cond)); % serial DDM prediction (average of negative and positive choices)
+        RT_pred_max(cond) = mean(Rfit_max{subj}.rt(Rfit_max{subj}.cohCond == cond)); % serial DDM prediction (average of negative and positive choices)
     end
     
     
@@ -97,9 +107,13 @@ for subj = 1:length(IDs)
     % plot data
     h1 = bar(1:max(D.cohCond),Corr_mean,0.7,'FaceColor',[1 1 1],'EdgeColor',[0 0 0],'LineWidth',0.5);
     
-    % plot model prediction
+    % plot serial model prediction
     for i = 1:max(D.cohCond)
-        h2 = plot([i-.34, i+.349],[Corr_pred(i), Corr_pred(i)],':','LineWidth',2.5,'Color','r'); hold on
+        plot([i-.34, i+.349],[Corr_pred_sum(i), Corr_pred_sum(i)],'-','LineWidth',2.5,'Color','r'); hold on
+    end
+    % plot serial model prediction
+    for i = 1:max(D.cohCond)
+        plot([i-.34, i+.349],[Corr_pred_max(i), Corr_pred_max(i)],'-','LineWidth',2.5,'Color','b'); hold on
     end
     
     % plot errorbar for data on top
@@ -122,9 +136,13 @@ for subj = 1:length(IDs)
     % plot data
     h1 = bar(1:max(D.cohCond),RT_mean,0.7,'FaceColor',[1 1 1],'EdgeColor',[0 0 0],'LineWidth',0.5);
     
-    % plot model
+    % plot serial model
     for i = 1:max(D.cohCond)
-        h2 = plot([i-.34, i+.349],[RT_pred(i), RT_pred(i)],':','LineWidth',2.5,'Color','r'); hold on
+        h2 = plot([i-.34, i+.349],[RT_pred_sum(i), RT_pred_sum(i)],'-','LineWidth',2.5,'Color','r'); hold on
+    end
+    % plot parallel model
+    for i = 1:max(D.cohCond)
+        h3 = plot([i-.34, i+.349],[RT_pred_max(i), RT_pred_max(i)],'-','LineWidth',2.5,'Color','b'); hold on
     end
     
     % plot errorbar for data on top
@@ -136,7 +154,7 @@ for subj = 1:length(IDs)
     if subj == 1
         ylabel('RT (s)');
         set(gca,'YTick', [.5:.5:2]);
-        legend([h1 h2], {'Data', 'Model'}, 'Location', 'NorthEast', 'box','off');
+        legend([h1 h2 h3], {'Data', 'Serial', 'Parallel'}, 'Location', 'NorthEast', 'box','off');
     else
         set(gca,'YTick', [], 'YTickLabel', []);
     end
@@ -146,11 +164,14 @@ for subj = 1:length(IDs)
 end
 
 %% save optimized model predictions
-save(['results_DDM.mat'], 'Rfit','theta_opt');
+save(['results_DDM.mat'], 'Rfit_sum','Rfit_max','theta_opt_sum','theta_opt_max');
+
+% show log10 BF (positive values are support for serial model)
+logBF = log10(BF)
 
 
 %% function to fit DDM
-function [nlogl Rfit]=dtb_cost_means(theta,D)
+function [nlogl Rfit]=dtb_cost_means(theta,D,model)
 
 B1=theta(1); % bound for 1D
 B2=theta(2); % bound for 2D
@@ -174,11 +195,14 @@ p22up = (1+exp(-2*drift22*B2)).^(-1); % 2D - stim 2
 psame = (p21up.*p22up) + (1-p21up).*(1-p22up); 
 
 % calculate predicted RTs
-rt1 = tnd1 + (B1./drift1).*tanh(drift1*B1); % 1D: non-decision time + decision time
+rt1 = tnd1 + (B1./drift1).*tanh(drift1*B1); % 1D: RT = non-decision time + decision time
 dt21 = (B2./(drift21)).*tanh(drift21*B2); % 2D - decision time for stimulus 1
 dt22 = (B2./(drift22)).*tanh(drift22*B2); % 2D - decision time for stimulus 2
-rt2 = tnd2 + dt21 + dt22; % 2D final decision time = non-decision time + sum of 2 decision times
-
+if contains(model,'sum')
+    rt2 = tnd2 + dt21 + dt22; % 2D serial decision time = non-decision time + SUM of 2 decision times
+elseif contains(model,'max')
+    rt2 = tnd2 + max([dt21,dt22],[],2); % 2D parallel decision time = non-decision time + MAX of 2 decision times
+end
 
 % compute log likelihoods based on actual choices and RTs
 y1 = D.incl_rt.*( 0.5 * ((D.rt - rt1)./D.rt_sd).^2 + log(sqrt(2*pi) * D.rt_sd)); % 1D RTs
